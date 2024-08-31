@@ -17,6 +17,11 @@
   text-decoration: none;
 }
 
+/* .externalLink {
+  color: blue;
+  cursor: pointer;
+} */
+
 .info {
   display: flex;
   justify-content: space-between;

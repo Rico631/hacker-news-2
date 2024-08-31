@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { unixToDate } from "../utils/utils";
+import { unixToDate, domainToHostName } from "../utils/utils";
 import style from "./NewsItem.module.css";
 
 export function NewsItem(props) {
@@ -16,16 +16,23 @@ export function NewsItem(props) {
 
   return (
     <div className={`${style.container} ${className}`}>
-      <Link className={style.link} to={`comments/${id}`}>{title}</Link>
-      {/* <a className={style.link} href={url}>
-        {title}
-      </a> */}
+      {url ? (
+        <div className={style.link}>{ title }</div>
+      ) : (
+        <Link className={style.link} to={`comments/${id}`}>
+          {title}
+        </Link>
+      )}
       <div className={style.info}>
         <div className={style.userData}>
           <span>{username} | </span>
           <span>{unixToDate(date)}</span>
         </div>
-        <div className={scoreClassArray.join(" ")}>{score} points</div>
+        {url ? (
+          <a href={url}>{domainToHostName(url)}</a>
+        ) : (
+          <div className={scoreClassArray.join(" ")}>{score} points</div>
+        )}
       </div>
     </div>
   );

@@ -35,7 +35,7 @@ export function NewsList() {
             key={i}
             id={item.id}
             title={item.title}
-            url={item.url}
+            // url={item.url}
             username={item.by}
             // date={new Date(item.time * 1000).toLocaleString("ru-RU")}
             date={item.time}
