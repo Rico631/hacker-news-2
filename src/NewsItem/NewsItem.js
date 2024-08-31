@@ -1,7 +1,6 @@
 import style from "./NewsItem.module.css";
 
 export function NewsItem(props) {
-  // console.log(props.children);
   return (
     <div className={style.container}>
       <a className={style.link} href="example.com">

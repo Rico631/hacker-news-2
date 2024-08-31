@@ -37,12 +37,8 @@ function App() {
   const checkStorage = () =>
     JSON.parse(window.localStorage.getItem("newsKey")) || initNews;
   const [news, setNews] = useState(checkStorage);
-  // const [count, setCount] = useState(0);
-
-  // console.log("render App");
 
   useEffect(() => {
-    // console.log("effect news");
     window.localStorage.setItem("newsKey", JSON.stringify(news));
   }, [news]);
 
@@ -52,7 +48,6 @@ function App() {
 
   return (
     <>
-      {/* <button onClick={() => setCount(count + 1)}>{count}</button> */}
       <div>Количество новостей: {news.length}</div>
       <button onClick={setNewsHandler}>Добавить новость</button>
       {news.map((item, i) => {
