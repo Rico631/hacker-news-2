@@ -1,46 +1,18 @@
-import { useState, useEffect } from "react";
-import { NewsItem } from "./NewsItem/NewsItem";
-import { get } from "./api/api";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { NewsList } from "./pages/NewsList/NewsList";
+import { Comments } from "./pages/Comments/Comments";
+import { Layout } from "./components/Layout/Layout";
 
 function App() {
-  const [news, setNews] = useState([]);
-
-  useEffect(() => {
-    getNewsList();
-  }, []);
-
-  async function getNewsList() {
-    const newsIds = await get(
-      'https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty&orderBy="$priority"&limitToFirst=10'
-    );
-    const newsList = await Promise.all(
-      newsIds.map((id) =>
-        get(
-          `https://hacker-news.firebaseio.com/v0/item/${id}.json?print=pretty`
-        )
-      )
-    );
-    // console.log(newsList);
-    setNews(newsList);
-  }
-
   return (
-    <>
-      <div>Количество новостей: {news.length}</div>
-      {news.map((item, i) => {
-        return (
-          <NewsItem
-            key={i}
-            title={item.title}
-            url={item.url}
-            username={item.by}
-            // date={new Date(item.time * 1000).toLocaleString("ru-RU")}
-            date={item.time}
-            score={item.score}
-          />
-        );
-      })}
-    </>
+    <Layout>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<NewsList />} />
+          <Route path="comments/:id" element={<Comments />} />
+        </Routes>
+      </BrowserRouter>
+    </Layout>
   );
 }
 
