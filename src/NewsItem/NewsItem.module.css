@@ -35,3 +35,17 @@
   border-radius: 12px;
 }
 
+.lowScore {
+  background-color: #8f8f8f;
+  color: white;
+}
+
+.midScore {
+  background-color: #ffbb00;
+  color: #7c4400;
+}
+
+.highScore {
+  background-color: #a6ff00;
+  color: #5c7e00;
+}
