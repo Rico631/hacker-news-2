@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { NewsList } from "./pages/NewsList/NewsList";
-import { Comments } from "./pages/Comments/Comments";
+import { NewsList } from "./pages/NewsListPage/NewsListPage";
+import { Comments } from "./pages/CommentsPage/CommentsPage";
 import { Layout } from "./components/Layout/Layout";
 
 function App() {
