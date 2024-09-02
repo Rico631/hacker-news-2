@@ -1,8 +1,8 @@
 import { Link, useParams } from "react-router-dom";
 import { NewsItem } from "../../NewsItem/NewsItem";
 import { get } from "../../api/api";
-import { useEffect, useState } from "react";
-import style from "./CommentsPage.module.css";
+import { useCallback, useEffect, useState } from "react";
+// import style from "./CommentsPage.module.css";
 import { CommentsWrapper } from "../../components/Comments/CommentsWrapper";
 
 export function Comments() {
@@ -10,19 +10,7 @@ export function Comments() {
   const [news, setNews] = useState();
   const [comments, setComments] = useState([]);
 
-  async function getNewsData(newsId) {
-    const newsData = await get(
-      `https://hacker-news.firebaseio.com/v0/item/${newsId}.json?print=pretty`
-    );
-    setNews(newsData);
-    if (newsData?.kids) {
-      const commentsData = await getNewsComment(newsData.kids);
-      setComments(commentsData);
-      console.log(commentsData);
-    }
-  }
-
-  async function getNewsComment(commentIds) {
+  const getNewsComment = useCallback( async (commentIds) => {
     return await Promise.all(
       commentIds.map(async (commentId) => {
         const comment = await get(
@@ -34,11 +22,24 @@ export function Comments() {
         return comment;
       })
     );
-  }
+  }, [])
+
+  const getNewsData = useCallback(async () => {
+    const newsData = await get(
+      `https://hacker-news.firebaseio.com/v0/item/${id}.json?print=pretty`
+    );
+    setNews(newsData);
+    if (newsData?.kids) {
+      const commentsData = await getNewsComment(newsData.kids);
+      setComments(commentsData);
+      console.log(commentsData);
+    }
+  }, [id, getNewsComment]);
+
 
   useEffect(() => {
-    getNewsData(id);
-  }, [id]);
+    getNewsData();
+  }, [getNewsData]);
 
   return (
     <div>
@@ -54,9 +55,7 @@ export function Comments() {
         />
       )}
 
-      {comments && (
-        <CommentsWrapper comments={comments} />
-        )}
+      {comments && <CommentsWrapper comments={comments} />}
     </div>
   );
 }
