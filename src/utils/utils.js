@@ -5,3 +5,12 @@ export function unixToDate(unixTime) {
   //   "0" + date.getHours()
   // ).slice(-2)}:${date.getMinutes()}`;
 }
+
+export function domainToHostName(url) {
+  const domain = new URL(url);
+  return domain.hostname;
+}
+
+export function copy(entity) {
+  return JSON.parse(JSON.stringify(entity));
+}
