@@ -2,7 +2,7 @@ import style from "./Comments.module.css";
 import { unixToDate, copy } from "../../utils/utils";
 import { useState } from "react";
 
-export function CommentsWrapper({ comments }) {
+export function CommentsWrapper({ comments, loadComment }) {
   const [openedComments, setOpenedComments] = useState({});
 
   return (
@@ -11,26 +11,33 @@ export function CommentsWrapper({ comments }) {
         comments={comments}
         openedComments={openedComments}
         onExpandComments={setOpenedComments}
+        loadComment={loadComment}
       />
     </div>
   );
 }
 
-function Comments({ comments, openedComments, onExpandComments }) {
+function Comments({ comments, openedComments, onExpandComments, loadComment }) {
 
-  function expandComment(commentId) {
+  async function expandComment(commentId) {
     const copyOpenedComments = copy(openedComments);
 
-    if (copyOpenedComments[commentId]) delete copyOpenedComments[commentId];
-    else copyOpenedComments[commentId] = {};
+    if (copyOpenedComments[commentId]) {
+      delete copyOpenedComments[commentId];
+    } else {
+      const comment = comments.find((c) => c.id === commentId);
 
-    onExpandComments(copyOpenedComments);
-  }
-
-  function expandSubComment(commentId, subComments) {
-    const copyOpenedComments = copy(openedComments);
-
-    copyOpenedComments[commentId] = subComments;
+      if (comment?.kids) {
+        if (!openedComments[commentId]) {
+          const loadedComments = await Promise.all(
+            comment.kids.map(loadComment)
+          );
+          copyOpenedComments[commentId] = loadedComments;
+        } else {
+          copyOpenedComments[commentId] = openedComments[commentId];
+        }
+      }
+    }
 
     onExpandComments(copyOpenedComments);
   }
@@ -45,24 +52,22 @@ function Comments({ comments, openedComments, onExpandComments }) {
             <div className={style.commentTime}>
               {unixToDate(commentItem.time)}
             </div>
-            {commentItem?.kids?.length && (
+            {commentItem?.kids?.length > 0 && (
               <button
                 className={style.commentReplyButton}
                 onClick={() => expandComment(commentItem.id)}
               >
                 {openedComments[commentItem.id] ? "Закрыть" : "Ответы"}
-                
               </button>
             )}
           </div>
-          {commentItem?.kids?.length && openedComments[commentItem.id] && (
+          {openedComments[commentItem.id] && (
             <div className={style.commentSubComment}>
               <Comments
-                comments={commentItem.kids}
-                openedComments={openedComments[commentItem.id]}
-                onExpandComments={(subComments) =>
-                  expandSubComment(commentItem.id, subComments)
-                }
+                comments={openedComments[commentItem.id]}
+                openedComments={openedComments}
+                onExpandComments={onExpandComments}
+                loadComment={loadComment}
               />
             </div>
           )}

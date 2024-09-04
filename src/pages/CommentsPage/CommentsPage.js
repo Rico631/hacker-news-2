@@ -10,19 +10,11 @@ export function Comments() {
   const [news, setNews] = useState();
   const [comments, setComments] = useState([]);
 
-  const getNewsComment = useCallback( async (commentIds) => {
-    return await Promise.all(
-      commentIds.map(async (commentId) => {
-        const comment = await get(
-          `https://hacker-news.firebaseio.com/v0/item/${commentId}.json?print=pretty`
-        );
-        if (comment?.kids) {
-          comment.kids = await getNewsComment(comment.kids);
-        }
-        return comment;
-      })
+  const getCommentById = useCallback(async (commentId) => {
+    return await get(
+      `https://hacker-news.firebaseio.com/v0/item/${commentId}.json?print=pretty`
     );
-  }, [])
+  }, []);
 
   const getNewsData = useCallback(async () => {
     const newsData = await get(
@@ -30,12 +22,12 @@ export function Comments() {
     );
     setNews(newsData);
     if (newsData?.kids) {
-      const commentsData = await getNewsComment(newsData.kids);
-      setComments(commentsData);
-      console.log(commentsData);
+      const topLevelComments = await Promise.all(
+        newsData.kids.map(getCommentById)
+      );
+      setComments(topLevelComments);
     }
-  }, [id, getNewsComment]);
-
+  }, [id, getCommentById]);
 
   useEffect(() => {
     getNewsData();
@@ -55,7 +47,9 @@ export function Comments() {
         />
       )}
 
-      {comments && <CommentsWrapper comments={comments} />}
+      {comments && (
+        <CommentsWrapper comments={comments} loadComment={getCommentById} />
+      )}
     </div>
   );
 }
